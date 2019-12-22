@@ -1,5 +1,8 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json())
 
 let notes = [
   {
@@ -38,6 +41,19 @@ app.get('/notes/:id', (request, response) => {
   } else {
     response.status(404).end()
   }
+})
+
+app.post('/notes', (request, response) => {
+  const maxId = notes.length > 0
+    ? Math.max(...notes.map(n => n.id)) 
+    : 0
+
+  const note = request.body
+  note.id = maxId + 1
+
+  notes = notes.concat(note)
+
+  response.json(note)
 })
 
 app.delete('/notes/:id', (request, response) => {
