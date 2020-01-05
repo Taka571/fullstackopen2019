@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const Note = require('./models/note')
 
 app.use(express.static('build'))
 
@@ -45,9 +46,11 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
 })
 
-app.get('/api/notes', (req, res) => {
-  res.json(notes)
-})
+app.get('/api/notes', (request, response) => {
+  Note.find({}).then(notes => {
+    response.json(notes.map(note => note.toJSON()))
+  });
+});
 
 app.get('/api/notes/:id', (request, response) => {
   const id = Number(request.params.id)
@@ -100,7 +103,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
